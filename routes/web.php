@@ -13,6 +13,21 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->get('/', function () {
+	return view('home');
+});
+
+$router->get('/set-webhook', 'WebhookController@get');
+
+$router->patch('/set-webhook', [
+	'as' => 'set-webhook.update',
+	'uses' => 'WebhookController@update'
+]);
+
+$router->group([
+	'prefix' => 'bot/' . env('BOT_TOKEN')
+], function () use ($router) {
+	$router->get('/', function () {
+		return 'Hola';
+	});
 });

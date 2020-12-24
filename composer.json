@@ -21,9 +21,7 @@
         }
     },
     "autoload-dev": {
-        "classmap": [
-            "tests/"
-        ]
+        "classmap": ["tests/"]
     },
     "config": {
         "preferred-install": "dist",
