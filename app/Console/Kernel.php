@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\LongPollingCommand;
 use App\Console\Commands\SetWebhookCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
@@ -14,7 +15,8 @@ class Kernel extends ConsoleKernel
 	 * @var array
 	 */
 	protected $commands = [
-		SetWebhookCommand::class
+		SetWebhookCommand::class,
+		LongPollingCommand::class
 	];
 
 	/**
@@ -25,6 +27,5 @@ class Kernel extends ConsoleKernel
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-		//
 	}
 }
