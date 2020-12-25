@@ -18,3 +18,7 @@ $router->post(
 		);
 	}
 );
+
+$router->get('/bot{{ botToken }}', function () {
+	return abort(404);
+});

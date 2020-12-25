@@ -17,6 +17,8 @@ class Bot extends Model
 		'token'
 	];
 
+	protected $commands = [];
+
 	public function __construct(array $attrs = [])
 	{
 		parent::__construct($attrs);

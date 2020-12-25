@@ -5,3 +5,4 @@ Homestead.yaml
 .phpunit.result.cache
 .git
 /node_modules
+/storage

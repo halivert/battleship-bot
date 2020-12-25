@@ -116,7 +116,7 @@ class Message extends Model implements Castable
 
 				$entity->final_value = Str::substr(
 					$this->text,
-					$entity->offset,
+					$entity->offset + 1,
 					$entity->length
 				);
 
