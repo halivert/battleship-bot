@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\ErrorResponse;
 use App\Traits\HasWebhook;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class InitBot extends Command
 {
@@ -51,5 +52,43 @@ class InitBot extends Command
 		}
 
 		$this->info("New webhook url: $newWebhookUrl");
+
+		$this->registerRoutes($bot);
+	}
+
+	public function registerRoutes($bot)
+	{
+		$routeDir = base_path() . '/routes';
+		$fileContents = file_get_contents("$routeDir/bot.stub");
+
+		$replace = [
+			'{{ botToken }}' => $bot->token,
+			'{{ botClass }}' => get_class($bot)
+		];
+
+		foreach ($replace as $key => $value) {
+			$fileContents = str_replace($key, $value, $fileContents);
+		}
+
+		$routeFile = "$routeDir/bots";
+		if (!file_exists($routeFile) or !is_dir($routeFile)) {
+			try {
+				if (file_exists($routeFile)) {
+					rename($routeFile, "$routeDir/bots.tmp");
+				}
+
+				mkdir($routeFile);
+			} catch (\Exception $e) {
+				return $this->error($e->getMessage());
+			}
+		}
+
+		$routeFile .= "/" . Str::of(class_basename(get_class($bot)))->lower();
+
+		if (!file_put_contents("$routeFile.php", $fileContents)) {
+			return $this->error("Failure creating $routeFile.php");
+		}
+
+		$this->info("$routeFile.php overwritten");
 	}
 }

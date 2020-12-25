@@ -112,6 +112,19 @@ $app->router->group([
 	'namespace' => 'App\Http\Controllers',
 ], function ($router) {
 	require __DIR__ . '/../routes/web.php';
+
+	$botsRoutes = base_path() . '/routes/bots';
+	if (file_exists($botsRoutes) and is_dir($botsRoutes)) {
+		foreach (new DirectoryIterator($botsRoutes) as $file) {
+			if (
+				$file->isDot() or $file->getFileInfo()->getExtension() !== 'php'
+			) {
+				continue;
+			}
+
+			require "$botsRoutes/{$file->getFilename()}";
+		}
+	}
 });
 
 return $app;

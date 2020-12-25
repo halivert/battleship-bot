@@ -66,4 +66,58 @@ class Update extends Model
 
 		return 'unknown';
 	}
+
+	public static function getRules(): array
+	{
+		return [
+			'update_id' => [
+				'required',
+				'integer'
+			],
+			'message' => [
+				'nullable',
+				'array'
+			],
+			'edited_message' => [
+				'nullable',
+				'array'
+			],
+			'channel_post' => [
+				'nullable',
+				'array'
+			],
+			'edited_channel_post' => [
+				'nullable',
+				'array'
+			],
+			'inline_query' => [
+				'nullable',
+				'array'
+			],
+			'chosen_inline_result' => [
+				'nullable',
+				'array'
+			],
+			'callback_query' => [
+				'nullable',
+				'array'
+			],
+			'shipping_query' => [
+				'nullable',
+				'array'
+			],
+			'pre_checkout_query' => [
+				'nullable',
+				'array'
+			],
+			'poll' => [
+				'nullable',
+				'array'
+			],
+			'poll_answer' => [
+				'nullable',
+				'array'
+			],
+		];
+	}
 }
