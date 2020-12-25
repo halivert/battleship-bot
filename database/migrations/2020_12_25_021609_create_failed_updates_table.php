@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUpdatesTable extends Migration
+class CreateFailedUpdatesTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -13,7 +13,7 @@ class CreateUpdatesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('updates', function (Blueprint $table) {
+		Schema::create('failed_updates', function (Blueprint $table) {
 			$table->unsignedBigInteger('update_id')->unique();
 			$table->json('message')->nullable();
 			$table->json('edited_message')->nullable();
@@ -26,8 +26,6 @@ class CreateUpdatesTable extends Migration
 			$table->json('pre_checkout_query')->nullable();
 			$table->json('poll')->nullable();
 			$table->json('poll_answer')->nullable();
-
-			$table->boolean('was_processed')->default(false);
 			$table->timestamps();
 		});
 	}
@@ -39,6 +37,6 @@ class CreateUpdatesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('updates');
+		Schema::dropIfExists('failed_updates');
 	}
 }

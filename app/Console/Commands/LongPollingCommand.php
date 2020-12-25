@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Bots\BattleshipBot;
+use App\Models\FailedUpdate;
 use App\Models\Update;
-use GuzzleHttp\Client;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 
 class LongPollingCommand extends Command
 {
@@ -13,29 +13,11 @@ class LongPollingCommand extends Command
 
 	protected $description = 'Long polling (only for local development)';
 
-	protected $botId;
-
-	protected $client;
-
-	public function __construct()
-	{
-		parent::__construct();
-
-		$this->botId = env('BOT_TOKEN');
-		$this->client = new Client();
-
-		if (!$this->botId) {
-			$this->error('Bot token not found');
-		}
-
-		if (!$this->client) {
-			$this->error('Error creating client');
-		}
-	}
-
 	public function handle()
 	{
-		$apiUrl = env('API_URL');
+		$battleshipBot = new BattleshipBot();
+		$tries = 0;
+
 		while (true) {
 			$offset = 0;
 
@@ -48,26 +30,40 @@ class LongPollingCommand extends Command
 				$offset = $lastUpdate->update_id + 1;
 			}
 
-			$response = $this->client->request(
-				'GET',
-				"$apiUrl/bot$this->botId/getUpdates",
-				[
-					'query' => [
-						'offset' => $offset
-					]
-				]
-			);
+			$updates = $battleshipBot->getUpdates(['offset' => $offset]);
 
-			if ($response->getStatusCode() === 200) {
-				$update = json_decode($response->getBody(), true);
+			foreach ($updates as $update) {
+				if (!$update->has_error) {
+					$update->save();
+					$this->info(
+						"Update created: $update->update_id"
+					);
+				}
+			}
 
-				if ($update['result']) {
-					foreach ($update['result'] as $result) {
-						$createdUpdate = Update::create($result);
-						$this->info(
-							"Update created: $createdUpdate->update_id"
-						);
+			$firstUpdate = Update::where('was_processed', false)
+				->orderBy('update_id')
+				->limit(1)
+				->get()
+				->first();
+
+			if ($firstUpdate) {
+				$update = $battleshipBot->handleUpdate($firstUpdate);
+				if ($update->has_error) {
+					if ($tries >= 3) {
+						$this->error("Failed update: $firstUpdate->update_id");
+						FailedUpdate::create($firstUpdate->toArray());
+						$firstUpdate->delete();
+						$tries = 0;
+					} else {
+						$this->error($update->getError()->description);
+						$tries++;
 					}
+				} else {
+					$this->info("Update processed: $firstUpdate->update_id");
+					$firstUpdate->was_processed = true;
+					$firstUpdate->save();
+					$tries = 0;
 				}
 			}
 
@@ -77,7 +73,7 @@ class LongPollingCommand extends Command
 		}
 	}
 
-	public function memoryExceeded($memoryLimit): bool
+	private function memoryExceeded($memoryLimit): bool
 	{
 		return (memory_get_usage(true) / 1024 / 1024) >= $memoryLimit;
 	}

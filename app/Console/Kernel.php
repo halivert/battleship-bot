@@ -2,8 +2,9 @@
 
 namespace App\Console;
 
+use App\Console\Commands\InitBot;
 use App\Console\Commands\LongPollingCommand;
-use App\Console\Commands\SetWebhookCommand;
+use App\Console\Commands\UpdatesRetryCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -15,8 +16,9 @@ class Kernel extends ConsoleKernel
 	 * @var array
 	 */
 	protected $commands = [
-		SetWebhookCommand::class,
-		LongPollingCommand::class
+		LongPollingCommand::class,
+		UpdatesRetryCommand::class,
+		InitBot::class
 	];
 
 	/**

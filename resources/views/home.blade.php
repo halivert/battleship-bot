@@ -3,23 +3,11 @@
 @section('title', __('Bienvenido'))
 
 @section('main')
-	<main class="main">
+	<main class="h-full bg-gray-100 flex items-center justify-center text-xl">
 		<div>
-			<h1>
-				<a>Bot</a>
-			</h1>
-		</div>
-
-		<div>
-			<table>
-				@foreach (App\Models\Update::all() as $update)
-					<tr>
-						<td>{{ $update->update_id }}</td>
-						<td>{{ $update->type }}</td>
-						<td>{{ $update->{$update->type}->chat->id }}</td>
-					</tr>
-				@endforeach
-			</table>
+			<a href="{{ env('BOT_URL') }}">
+				Bot de <strong class="text-green-500">{{ env('APP_NAME') }}</strong>
+			</a>
 		</div>
 	</main>
 @endsection

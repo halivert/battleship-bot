@@ -14,13 +14,15 @@ class CreateUsersTable extends Migration
 	public function up()
 	{
 		Schema::create('users', function (Blueprint $table) {
-			$table->id();
-			$table->unsignedBigInteger('telegram_id')->unique();
+			$table->unsignedBigInteger('id')->unique();
 			$table->boolean('is_bot');
 			$table->string('first_name');
 			$table->string('last_name')->nullable();
 			$table->string('username')->unique()->nullable();
 			$table->string('language_code')->nullable();
+			$table->boolean('can_join_groups')->nullable();
+			$table->boolean('can_read_all_group_messages')->nullable();
+			$table->boolean('supports_inline_queries')->nullable();
 
 			$table->timestamps();
 		});

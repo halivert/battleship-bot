@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use Illuminate\Database\Eloquent\Model;
 
 class Chat extends Model implements Castable
 {
@@ -52,10 +51,11 @@ class Chat extends Model implements Castable
 			public function get($model, string $key, $value, array $attributes)
 			{
 				if ($value) {
-					if (is_array($value))
-						return new Chat($value);
-					else
-						return new Chat(json_decode($value, true));
+					if (!is_array($value)) {
+						$value = json_decode($value, true);
+					}
+
+					return new Chat($value);
 				}
 				return null;
 			}

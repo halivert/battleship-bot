@@ -48,10 +48,6 @@ $app->singleton(
 	App\Console\Kernel::class
 );
 
-$app->singleton(
-	GuzzleHttp\Client::class
-);
-
 /*
 |--------------------------------------------------------------------------
 | Register Config Files

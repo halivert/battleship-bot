@@ -5,22 +5,12 @@ namespace App\Models;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
-class MessageEntity extends Model implements Castable
+class ErrorResponse extends Model implements Castable
 {
 	protected $fillable = [
-		'type',
-		'offset',
-		'length',
-		'url',
-		'user',
-		'language',
-		'final_value',
-	];
-
-	protected $casts = [
-		'offset' => 'integer',
-		'length' => 'integer',
-		'user' => User::class,
+		'ok',
+		'error_code',
+		'description'
 	];
 
 	/**
@@ -40,7 +30,7 @@ class MessageEntity extends Model implements Castable
 						$value = json_decode($value, true);
 					}
 
-					return new MessageEntity($value);
+					return new ErrorResponse($value);
 				}
 				return null;
 			}

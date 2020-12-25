@@ -40,3 +40,7 @@ body {
 .p-4 {
 	padding: 1rem;
 }
+
+.pre-space {
+	white-space: pre;
+}

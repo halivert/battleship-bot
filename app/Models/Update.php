@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 class Update extends Model
 {
 	protected $primaryKey = 'update_id';
@@ -43,21 +41,28 @@ class Update extends Model
 		/* 'pre_checkout_query' => 'array', */
 		/* 'poll' => 'array', */
 		/* 'poll_answer' => 'array', */
+		'was_processed' => 'boolean'
 	];
 
 	public function getTypeAttribute(): string
 	{
-		if ($this->message) return 'message';
-		if ($this->edited_message) return 'edited_message';
-		if ($this->channel_post) return 'channel_post';
-		if ($this->edited_channel_post) return 'edited_channel_post';
-		if ($this->inline_query) return 'inline_query';
-		if ($this->chosen_inline_result) return 'chosen_inline_result';
-		if ($this->callback_query) return 'callback_query';
-		if ($this->shipping_query) return 'shipping_query';
-		if ($this->pre_checkout_query) return 'pre_checkout_query';
-		if ($this->poll) return 'poll';
-		if ($this->poll_answer) return 'poll_answer';
+		$keys = [
+			'message',
+			'edited_message',
+			'channel_post',
+			'edited_channel_post',
+			'inline_query',
+			'chosen_inline_result',
+			'callback_query',
+			'shipping_query',
+			'pre_checkout_query',
+			'poll',
+			'poll_answer',
+		];
+
+		foreach ($keys as $key) {
+			if ($this->$key) return $key;
+		}
 
 		return 'unknown';
 	}

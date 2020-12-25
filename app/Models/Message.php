@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -128,20 +127,6 @@ class Message extends Model implements Castable
 		return collect();
 	}
 
-	public function answer(array $options)
-	{
-		$botId = env('BOT_TOKEN');
-		$apiUrl = env('API_URL');
-
-		$client = app('GuzzleHttp\Client');
-
-		return $client->request('GET', "$apiUrl/bot$botId/sendMessage", [
-			'query' => [
-				'chat_id' => $this->chat->id
-			] + $options
-		]);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -155,10 +140,11 @@ class Message extends Model implements Castable
 			public function get($model, string $key, $value, array $attributes)
 			{
 				if ($value) {
-					if (is_array($value))
-						return new Message($value);
-					else
-						return new Message(json_decode($value, true));
+					if (!is_array($value)) {
+						$value = json_decode($value, true);
+					}
+
+					return new Message($value);
 				}
 				return null;
 			}
