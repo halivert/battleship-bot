@@ -34,7 +34,7 @@ class Update extends Model
 		'edited_message' => Message::class,
 		'channel_post' => Message::class,
 		'edited_channel_post' => Message::class,
-		/* 'inline_query' => 'array', */
+		'inline_query' => InlineQuery::class,
 		/* 'chosen_inline_result' => 'array', */
 		/* 'callback_query' => 'array', */
 		/* 'shipping_query' => 'array', */

@@ -33,6 +33,10 @@ class BattleshipBot extends Bot
 			return $this->handleMessage($update);
 		}
 
+		/* if ($update->type === 'inline_query') { */
+		/* 	return $this->handleInlineQuery($update); */
+		/* } */
+
 		return new Update(['error' => [
 			'description' => 'Unknown error'
 		]]);
@@ -145,5 +149,10 @@ class BattleshipBot extends Bot
 		}
 
 		return new Update(['message' => $message]);
+	}
+
+	public function handleInlineQuery(Update $update): Update
+	{
+		$this->answerInlineQuery([], $update->inline_query);
 	}
 }

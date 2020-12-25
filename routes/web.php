@@ -16,15 +16,3 @@
 $router->get('/', function () {
 	return view('home');
 });
-
-/* $router->group([ */
-/* 	'prefix' => 'bot/' . env('BOT_TOKEN') */
-/* ], function () use ($router) { */
-/* 	$router->get('/', function () { */
-/* 		$update = Update::first(); */
-
-/* 		if (!$update or !$update->message) return false; */
-
-/* 		dd($update->message->toArray()); */
-/* 	}); */
-/* }); */

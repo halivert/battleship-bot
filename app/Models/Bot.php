@@ -42,6 +42,11 @@ class Bot extends Model
 		);
 	}
 
+	public function handleUpdate(Update $update): Update
+	{
+		throw new Exception('Not implemented');
+	}
+
 	public function getMe(): User
 	{
 		$resp = $this->genericRequest('getMe');
@@ -61,9 +66,11 @@ class Bot extends Model
 		array $opts = [],
 		?Message $message = null
 	): Message {
-		$resp = $this->genericRequest('sendMessage', $opts + [
-			'chat_id' => $message ? $message->chat->id : null
-		]);
+		if ($message and !($opts['chat_id'] ?? false)) {
+			$opts['chat_id'] = $message->chat->id;
+		}
+
+		$resp = $this->genericRequest('sendMessage', $opts);
 
 		if ($resp->getStatusCode() === 200) {
 			$rawMessage = $resp->getBody();
@@ -92,14 +99,20 @@ class Bot extends Model
 		}
 
 		return collect([
-			new Update([
-				'error' => json_decode($resp->getBody(), true)
-			])
+			new Update(['error' => json_decode($resp->getBody(), true)])
 		]);
 	}
 
-	public function handleUpdate(Update $update): Update
-	{
-		throw new Exception('Not implemented');
+	public function answerInlineQuery(
+		array $opts = [],
+		InlineQuery $inlineQuery = null
+	): bool {
+		if ($inlineQuery and !($opts['inline_query_id'] ?? false)) {
+			$opts['inline_query_id'] = $inlineQuery->id;
+		}
+
+		$resp = $this->genericRequest('answerInlineQuery', $opts);
+
+		return $resp->getStatusCode() === 200;
 	}
 }
