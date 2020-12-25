@@ -16,6 +16,19 @@ class LongPollingCommand extends Command
 	public function handle()
 	{
 		$battleshipBot = new BattleshipBot();
+
+		if ($battleshipBot->webhook_url) {
+			$resp = $battleshipBot->deleteWebhook();
+
+			$resp = json_decode($resp->getBody(), true);
+
+			if ($resp['ok'] === true) {
+				$this->info('Webhook deleted');
+			} else {
+				$this->info('Error on webhook');
+			}
+		}
+
 		$tries = 0;
 
 		while (true) {

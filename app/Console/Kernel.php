@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\InitBot;
 use App\Console\Commands\LongPollingCommand;
 use App\Console\Commands\UpdatesRetryCommand;
+use App\Models\Update;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -29,5 +30,10 @@ class Kernel extends ConsoleKernel
 	 */
 	protected function schedule(Schedule $schedule)
 	{
+		$schedule->call(function () {
+			Update::destroy(
+				Update::where('was_processed', true)->pluck('update_id')
+			);
+		})->daily();
 	}
 }

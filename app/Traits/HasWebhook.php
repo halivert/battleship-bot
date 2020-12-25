@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\WebhookInfo;
+use Psr\Http\Message\ResponseInterface;
 
 trait HasWebhook
 {
@@ -28,22 +29,29 @@ trait HasWebhook
 		]);
 	}
 
-	public function getWebhookUrlAttribute($value): string
+	public function getWebhookUrlAttribute($value): ?string
 	{
 		if ($value) return $value;
 
-		return ($this->webhook_url = $this->getWebhookInfo()->url);
+		$webhookInfo = $this->getWebhookInfo();
+
+		if ($webhookInfo->has_error) return null;
+
+		return ($this->webhook_url = $webhookInfo->url);
 	}
 
-	public function setWebhook(string $url, array $opts = [])
-	{
+	public function setWebhook(
+		string $url,
+		array $opts = []
+	): ResponseInterface {
 		return $this->genericRequest('setWebhook', [
 			'url' => $url
 		] + $opts);
 	}
 
-	public function deleteWebhook(bool $dropPendingUpdates = false)
-	{
+	public function deleteWebhook(
+		bool $dropPendingUpdates = false
+	): ResponseInterface {
 		return $this->genericRequest('deleteWebhook', [
 			'drop_pending_updates' => $dropPendingUpdates
 		]);
