@@ -28,7 +28,7 @@ class Bot extends Model
 		$this->apiUrl = "$baseUrl$this->token";
 	}
 
-	protected function genericRequest(
+	protected function genericGET(
 		$method,
 		array $opts = []
 	): ResponseInterface {
@@ -42,6 +42,23 @@ class Bot extends Model
 		);
 	}
 
+	protected function genericPOST(
+		$method,
+		array $opts = []
+	): ResponseInterface {
+		return $this->httpClient->request(
+			'POST',
+			"$this->apiUrl/$method",
+			[
+				'headers' => [
+					'Content-Type' => 'application/json'
+				],
+				'http_errors' => false,
+				'body' => json_encode($opts, JSON_UNESCAPED_UNICODE)
+			]
+		);
+	}
+
 	public function handleUpdate(Update $update): Update
 	{
 		throw new Exception('Not implemented');
@@ -49,7 +66,7 @@ class Bot extends Model
 
 	public function getMe(): User
 	{
-		$resp = $this->genericRequest('getMe');
+		$resp = $this->genericPOST('getMe');
 
 		if ($resp->getStatusCode() === 200) {
 			$rawUser = $resp->getBody();
@@ -70,7 +87,7 @@ class Bot extends Model
 			$opts['chat_id'] = $message->chat->id;
 		}
 
-		$resp = $this->genericRequest('sendMessage', $opts);
+		$resp = $this->genericPOST('sendMessage', $opts);
 
 		if ($resp->getStatusCode() === 200) {
 			$rawMessage = $resp->getBody();
@@ -85,7 +102,7 @@ class Bot extends Model
 
 	public function getUpdates(array $opts = []): Collection
 	{
-		$resp = $this->genericRequest('getUpdates', $opts);
+		$resp = $this->genericGET('getUpdates', $opts);
 
 		if ($resp->getStatusCode() === 200) {
 			$result = collect();
@@ -106,13 +123,21 @@ class Bot extends Model
 	public function answerInlineQuery(
 		array $opts = [],
 		InlineQuery $inlineQuery = null
-	): bool {
+	): Update {
 		if ($inlineQuery and !($opts['inline_query_id'] ?? false)) {
 			$opts['inline_query_id'] = $inlineQuery->id;
 		}
 
-		$resp = $this->genericRequest('answerInlineQuery', $opts);
+		$resp = $this->genericPOST('answerInlineQuery', $opts);
 
-		return $resp->getStatusCode() === 200;
+		if ($resp->getStatusCode() === 200) {
+			$rawMessage = $resp->getBody();
+
+			if ($rawMessage) {
+				return new Update(json_decode($rawMessage, true)['result']);
+			}
+		}
+
+		return new Update(['error' => json_decode($resp->getBody(), true)]);
 	}
 }

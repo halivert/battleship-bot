@@ -4,28 +4,10 @@ namespace App\Models;
 
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
 
-class InlineQuery extends Model implements Castable
+class InputMessageContent extends Model implements Castable
 {
-	protected $fillable = [
-		'id',
-		'from',
-		'location',
-		'query',
-		'offset',
-	];
-
-	protected $casts = [
-		'id' => 'string',
-		'from' => User::class,
-		/* 'location' => Location::class, */
-		'query' => 'string',
-		'offset' => 'string',
-	];
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public static function castUsing(array $arguments)
 	{
 		return new class implements CastsAttributes
@@ -40,7 +22,7 @@ class InlineQuery extends Model implements Castable
 						$value = json_decode($value, true);
 					}
 
-					return new InlineQuery($value);
+					return new InputMessageContent($value);
 				}
 				return null;
 			}

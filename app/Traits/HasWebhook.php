@@ -14,7 +14,7 @@ trait HasWebhook
 
 	public function getWebhookInfo(): WebhookInfo
 	{
-		$resp = $this->genericRequest('getWebhookInfo');
+		$resp = $this->genericGET('getWebhookInfo');
 
 		if ($resp->getStatusCode() === 200) {
 			$rawUser = $resp->getBody();
@@ -44,7 +44,7 @@ trait HasWebhook
 		string $url,
 		array $opts = []
 	): ResponseInterface {
-		return $this->genericRequest('setWebhook', [
+		return $this->genericGET('setWebhook', [
 			'url' => $url
 		] + $opts);
 	}
@@ -52,7 +52,7 @@ trait HasWebhook
 	public function deleteWebhook(
 		bool $dropPendingUpdates = false
 	): ResponseInterface {
-		return $this->genericRequest('deleteWebhook', [
+		return $this->genericGET('deleteWebhook', [
 			'drop_pending_updates' => $dropPendingUpdates
 		]);
 	}

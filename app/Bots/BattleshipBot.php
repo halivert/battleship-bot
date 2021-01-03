@@ -3,6 +3,10 @@
 namespace App\Bots;
 
 use App\Models\Bot;
+use App\Models\ErrorResponse;
+use App\Models\InlineMode\InlineQueryResultArticle;
+use App\Models\InlineMode\InlineQueryResultGame;
+use App\Models\InputTextMessageContent;
 use App\Models\Message;
 use App\Models\Update;
 use App\Models\User;
@@ -33,9 +37,9 @@ class BattleshipBot extends Bot
 			return $this->handleMessage($update);
 		}
 
-		/* if ($update->type === 'inline_query') { */
-		/* 	return $this->handleInlineQuery($update); */
-		/* } */
+		if ($update->type === 'inline_query') {
+			return $this->handleInlineQuery($update);
+		}
 
 		return new Update(['error' => [
 			'description' => 'Unknown error'
@@ -153,6 +157,16 @@ class BattleshipBot extends Bot
 
 	public function handleInlineQuery(Update $update): Update
 	{
-		$this->answerInlineQuery([], $update->inline_query);
+		return $this->answerInlineQuery([
+			'results' => [
+				new InlineQueryResultArticle([
+					'title' => __('Batalla naval'),
+					'input_message_content' => new InputTextMessageContent([
+						'message_text' => __('Jugar')
+					]),
+					'description' => __('Juego de batalla naval'),
+				])
+			]
+		], $update->inline_query);
 	}
 }

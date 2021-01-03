@@ -6,6 +6,7 @@ use App\Bots\BattleshipBot;
 use App\Models\FailedUpdate;
 use App\Models\Update;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 
 class LongPollingCommand extends Command
 {
@@ -30,10 +31,9 @@ class LongPollingCommand extends Command
 		}
 
 		$tries = 0;
+		$offset = 0;
 
 		while (true) {
-			$offset = 0;
-
 			$lastUpdate = Update::orderBy('update_id', 'desc')
 				->limit(1)
 				->get()
@@ -43,7 +43,10 @@ class LongPollingCommand extends Command
 				$offset = $lastUpdate->update_id + 1;
 			}
 
-			$updates = $battleshipBot->getUpdates(['offset' => $offset]);
+			$updates = $battleshipBot->getUpdates([
+				'offset' => $offset,
+				'timeout' => 2
+			]);
 
 			foreach ($updates as $update) {
 				if (!$update->has_error) {
@@ -63,9 +66,14 @@ class LongPollingCommand extends Command
 			if ($firstUpdate) {
 				$update = $battleshipBot->handleUpdate($firstUpdate);
 				if ($update->has_error) {
-					if ($tries >= 3) {
+					if ($tries >= 3 or $update->error->error_code === 400) {
+						if ($update->error->error_code === 400) {
+							$this->error($update->getError()->description);
+						}
+
 						$this->error("Failed update: $firstUpdate->update_id");
 						FailedUpdate::create($firstUpdate->toArray());
+						$offset = $firstUpdate->update_id + 1;
 						$firstUpdate->delete();
 						$tries = 0;
 					} else {
