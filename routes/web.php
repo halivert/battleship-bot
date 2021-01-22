@@ -1,18 +1,19 @@
 <?php
 
-/** @var \Laravel\Lumen\Routing\Router $router */
-
 /*
 |--------------------------------------------------------------------------
-| Application Routes
+| Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
 |
 */
 
-$router->get('/', function () {
-	return view('home');
+Route::get('/', function () {
+    return view('welcome');
 });
+
+Route::match(['get', 'post'], '/botman', 'BotManController@handle');
+Route::get('/botman/tinker', 'BotManController@tinker');
