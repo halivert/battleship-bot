@@ -3,9 +3,7 @@
 namespace App\Bots;
 
 use App\Models\Bot;
-use App\Models\ErrorResponse;
 use App\Models\InlineMode\InlineQueryResultArticle;
-use App\Models\InlineMode\InlineQueryResultGame;
 use App\Models\InputTextMessageContent;
 use App\Models\Message;
 use App\Models\Update;
@@ -165,6 +163,7 @@ class BattleshipBot extends Bot
 						'message_text' => __('Jugar')
 					]),
 					'description' => __('Juego de batalla naval'),
+					'url' => __('https://es.wikipedia.org/wiki/Batalla_naval_(juego)')
 				])
 			]
 		], $update->inline_query);

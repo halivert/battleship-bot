@@ -24,7 +24,7 @@ class Bot extends Model
 		parent::__construct($attrs);
 
 		$this->httpClient = new Client();
-		$baseUrl = env('BASE_API_URL');
+		$baseUrl = "https://api.telegram.org/bot";
 		$this->apiUrl = "$baseUrl$this->token";
 	}
 
