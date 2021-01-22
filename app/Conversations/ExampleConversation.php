@@ -2,44 +2,42 @@
 
 namespace App\Conversations;
 
-use Illuminate\Foundation\Inspiring;
-use BotMan\BotMan\Messages\Incoming\Answer;
-use BotMan\BotMan\Messages\Outgoing\Question;
-use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Conversations\Conversation;
+use BotMan\BotMan\Messages\Incoming\Answer;
+use BotMan\BotMan\Messages\Outgoing\Actions\Button;
+use BotMan\BotMan\Messages\Outgoing\Question;
+use Illuminate\Foundation\Inspiring;
 
 class ExampleConversation extends Conversation
 {
-    /**
-     * First question
-     */
-    public function askReason()
-    {
-        $question = Question::create("Huh - you woke me up. What do you need?")
-            ->fallback('Unable to ask question')
-            ->callbackId('ask_reason')
-            ->addButtons([
-                Button::create('Tell a joke')->value('joke'),
-                Button::create('Give me a fancy quote')->value('quote'),
-            ]);
+	/**
+	 * Start the conversation
+	 */
+	public function run()
+	{
+		$question = Question::create("¿Que quieres?")
+			->fallback('¿Qué? no sé 😅')
+			->callbackId('ask_reason')
+			->addButtons([
+				Button::create('Dime una broma')->value('joke'),
+				Button::create('Dime una cosa')->value('quote'),
+				Button::create('Whatever')->value('lolo'),
+			]);
 
-        return $this->ask($question, function (Answer $answer) {
-            if ($answer->isInteractiveMessageReply()) {
-                if ($answer->getValue() === 'joke') {
-                    $joke = json_decode(file_get_contents('http://api.icndb.com/jokes/random'));
-                    $this->say($joke->value->joke);
-                } else {
-                    $this->say(Inspiring::quote());
-                }
-            }
-        });
-    }
+		return $this->ask($question, fn (Answer $a) => $this->replyAnswer($a));
+	}
 
-    /**
-     * Start the conversation
-     */
-    public function run()
-    {
-        $this->askReason();
-    }
+	public function replyAnswer(Answer $answer)
+	{
+		if ($answer->isInteractiveMessageReply()) {
+			if ($answer->getValue() === 'joke') {
+				$joke = json_decode(
+					file_get_contents('http://api.icndb.com/jokes/random')
+				);
+				$this->say($joke->value->joke);
+			} else if ($answer->getValue() === 'quote') {
+				$this->say(Inspiring::quote());
+			}
+		}
+	}
 }

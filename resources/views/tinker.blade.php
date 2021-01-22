@@ -34,7 +34,9 @@
 <body>
 <div class="container">
     <div class="content" id="app">
-        <botman-tinker api-endpoint="/botman"></botman-tinker>
+        <botman-tinker
+            api-endpoint="/bot{{ config('botman.telegram.token') }}">
+        </botman-tinker>
     </div>
 </div>
 
